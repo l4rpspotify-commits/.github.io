@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Attack on Titan RP</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0c0a08; font-family: Georgia, "Times New Roman", serif; color: #ebe1cd; }
+  .sky { position: absolute; inset: 0; background: linear-gradient(#0c0e1e 0%, #2a1a26 45%, #783426 72%, #1a1410 100%); }
+  .moon { position: absolute; right: 16%; top: 12%; width: 14vh; height: 14vh; border-radius: 50%; background: #f5e1be; box-shadow: 0 0 80px 30px rgba(255, 220, 170, .15); }
+  .titan { position: absolute; left: 22%; bottom: 36%; width: 34vh; height: 34vh; border-radius: 50% 50% 38% 38%; background: #401a16; }
+  .titan::before, .titan::after { content: ""; position: absolute; top: 30%; width: 14%; height: 14%; border-radius: 50%; background: #ffd28c; box-shadow: 0 0 30px 10px rgba(255, 190, 110, .5); animation: glow 3s ease-in-out infinite; }
+  .titan::before { left: 22%; } .titan::after { right: 22%; }
+  @keyframes glow { 50% { opacity: .55; } }
+  .steam { position: absolute; left: 30%; bottom: 60%; width: 8vh; height: 8vh; border-radius: 50%; background: rgba(230, 220, 215, .18); filter: blur(8px); animation: rise 7s linear infinite; }
+  .steam:nth-child(2) { left: 34%; animation-delay: 2s; } .steam:nth-child(3) { left: 26%; animation-delay: 4s; } .steam:nth-child(4) { left: 31%; animation-delay: 5.5s; }
+  @keyframes rise { from { transform: translateY(0) scale(.6); opacity: 1; } to { transform: translateY(-50vh) scale(2.2); opacity: 0; } }
+  .wall { position: absolute; left: 0; right: 0; bottom: 0; height: 40%;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 32px, #24201c 32px 34px),
+      linear-gradient(#3a342e, #26211c); }
+  .wall::before { content: ""; position: absolute; top: -22px; left: 0; right: 0; height: 22px;
+    background: repeating-linear-gradient(90deg, #3a342e 0 46px, transparent 46px 92px); }
+  .fog { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, .75) 100%); }
+  .content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 7vh; text-align: center; }
+  h1 { font-size: 10vh; letter-spacing: .06em; color: #c4a360; text-shadow: 0 4px 12px #000; }
+  .line { width: 40vh; height: 1px; background: rgba(196, 163, 96, .6); margin: 1.4vh 0; }
+  h2 { font-size: 2.2vh; letter-spacing: .6em; font-weight: normal; }
+  .sub { margin-top: 1vh; font-style: italic; color: #a0968a; font-size: 2.4vh; }
+  .panel { position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%); width: 60vh; padding: 2.2vh 3vh; background: rgba(18, 15, 12, .88); border: 1px solid #8c7344; border-radius: 6px; }
+  .status { font-size: 1.9vh; color: #ebe1cd; min-height: 2.4vh; }
+  .bar { margin-top: 1.2vh; height: 1.2vh; background: #0a0806; border-radius: 3px; overflow: hidden; }
+  .fill { height: 100%; width: 0%; background: linear-gradient(90deg, #8c7344, #c4a360); transition: width .3s; }
+  .tip { margin-top: 1.6vh; font-size: 1.7vh; color: #a0968a; font-style: italic; min-height: 2.2vh; }
+  .map { position: absolute; top: 2vh; right: 3vh; font-size: 1.6vh; color: #a0968a; }
+</style>
+</head>
+<body>
+  <div class="sky"></div>
+  <div class="moon"></div>
+  <div class="steam"></div><div class="steam"></div><div class="steam"></div><div class="steam"></div>
+  <div class="titan"></div>
+  <div class="wall"></div>
+  <div class="fog"></div>
+  <div class="map" id="map"></div>
+  <div class="content">
+    <h1>ATTACK ON TITAN</h1>
+    <div class="line"></div>
+    <h2>ROLEPLAY</h2>
+    <div class="sub">Hinter den Mauern &middot; Jahr 850</div>
+  </div>
+  <div class="panel">
+    <div class="status" id="status">Verbinde mit Trost...</div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="tip" id="tip"></div>
+  </div>
+<script>
+  var tips = [
+    "Titanen sterben nur durch einen Hieb in den Nacken - von hinten.",
+    "Rechte Maustaste halten schießt die Haken. Shift in der Luft gibt Gas-Boost.",
+    "Gas und Klingen gibt es an jeder Versorgungsstation.",
+    "Wer gepackt wird, braucht Kameraden: Zwei Treffer befreien ihn.",
+    "Ins Militär kommt man nur über das Kadettenkorps.",
+    "Die Militärpolizei nimmt nur die zehn Besten jedes Jahrgangs.",
+    "Der Untergrund sieht für Außenstehende aus wie normale Bürger.",
+    "F4 öffnet das Fraktionsmenü, F3 schaltet die Third-Person-Ansicht.",
+    "NLR: Nach dem Tod vergisst du die letzten 15 Minuten."
+  ];
+  var t = 0;
+  function nextTip() { document.getElementById("tip").textContent = tips[t % tips.length]; t++; }
+  nextTip(); setInterval(nextTip, 6000);
+
+  var total = 0, needed = 0;
+  function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
+    document.getElementById("map").textContent = "Map: " + mapname;
+  }
+  function SetFilesTotal(n) { total = n; needed = n; }
+  function SetFilesNeeded(n) {
+    needed = n;
+    if (total > 0) document.getElementById("fill").style.width = Math.round((1 - needed / total) * 100) + "%";
+  }
+  function DownloadingFile(name) { document.getElementById("status").textContent = "Lade: " + name.split("/").pop(); }
+  function SetStatusChanged(s) {
+    document.getElementById("status").textContent = s;
+    if (s.indexOf("Sending client info") === 0 || s.indexOf("Client info") === 0) document.getElementById("fill").style.width = "100%";
+  }
+</script>
+</body>
+</html>
